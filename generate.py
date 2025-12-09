@@ -62,7 +62,7 @@ def generate_peptide():
     seq = seq.replace("\n", "").replace("\r", "").strip()
 
     #  随机长度限制：1~50 个字符
-    max_len = random.randint(1, 50)
+    max_len = random.randint(20, 50)
     seq = seq[:max_len]
 
     return seq
@@ -83,3 +83,4 @@ sequences = list(set(sequences))
 df = pd.DataFrame({"peptide_sequence": sequences})
 df.to_csv(output_csv, index=False)
 print(f"✅ 已生成 {len(sequences)} 条抗菌肽序列，保存到 {output_csv}")
+
