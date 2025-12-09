@@ -31,18 +31,15 @@ AMINO_ACIDS = list("ACDEFGHIKLMNPQRSTVWY")
 
 # ====== 生成函数（含 attention_mask） ======
 def generate_peptide():
-    # 随机选一个氨基酸作为起始 token
     seed_aa = random.choice(AMINO_ACIDS)
 
-    # tokenizer 生成 input_ids 和 attention_mask（解决警告）
     inputs = tokenizer(seed_aa, return_tensors="pt")
     input_ids = inputs.input_ids.to(model.device)
     attention_mask = inputs.attention_mask.to(model.device)
 
-    # 生成序列
     output_ids = model.generate(
         input_ids=input_ids,
-        attention_mask=attention_mask,        # ★ 手动传入（解决警告 2）
+        attention_mask=attention_mask,
         max_new_tokens=max_new_tokens,
         do_sample=True,
         temperature=temperature,
@@ -52,14 +49,16 @@ def generate_peptide():
         eos_token_id=tokenizer.eos_token_id
     )
 
-    # 解码
     seq = tokenizer.decode(output_ids[0], skip_special_tokens=True)
 
-    # 去掉开头的seed（可选）
     if seq.startswith(seed_aa):
         seq = seq[1:]
 
+    # ⭐ 关键：去掉换行符
+    seq = seq.replace("\n", "").replace("\r", "").strip()
+
     return seq
+
 
 # ====== 批量生成 ======
 sequences = []
